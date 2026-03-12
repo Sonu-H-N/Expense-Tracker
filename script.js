@@ -1,47 +1,72 @@
-const form = document.getElementById("form");
-const text = document.getElementById("text");
-const amount = document.getElementById("amount");
-const list = document.getElementById("list");
-const balance = document.getElementById("balance");
+const balance = document.getElementById("balance")
+const income = document.getElementById("income")
+const expense = document.getElementById("expense")
+const list = document.getElementById("list")
+const form = document.getElementById("form")
+const text = document.getElementById("text")
+const amount = document.getElementById("amount")
 
-let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+let transactions = JSON.parse(localStorage.getItem("transactions")) || []
 
-function updateUI() {
-    list.innerHTML = "";
-    let total = 0;
+function updateValues(){
 
-    transactions.forEach((t, index) => {
-        total += Number(t.amount);
+const amounts = transactions.map(t => t.amount)
 
-        const li = document.createElement("li");
-        li.innerHTML = `
-            ${t.text} <span>₹${t.amount}</span>
-            <button onclick="deleteTransaction(${index})">❌</button>
-        `;
-        list.appendChild(li);
-    });
+const total = amounts.reduce((acc,item)=>acc+item,0).toFixed(2)
 
-    balance.innerText = total;
-    localStorage.setItem("transactions", JSON.stringify(transactions));
+const inc = amounts
+.filter(item => item > 0)
+.reduce((acc,item)=>acc+item,0)
+.toFixed(2)
+
+const exp = amounts
+.filter(item => item < 0)
+.reduce((acc,item)=>acc+item,0)
+.toFixed(2)
+
+balance.innerText = `₹${total}`
+income.innerText = `₹${inc}`
+expense.innerText = `₹${Math.abs(exp)}`
 }
 
-form.addEventListener("submit", e => {
-    e.preventDefault();
+function addTransactionDOM(transaction){
 
-    transactions.push({
-        text: text.value,
-        amount: amount.value
-    });
+const sign = transaction.amount < 0 ? "-" : "+"
 
-    text.value = "";
-    amount.value = "";
+const item = document.createElement("li")
 
-    updateUI();
-});
+item.innerHTML = `
+${transaction.text}
+<span>${sign}₹${Math.abs(transaction.amount)}</span>
+`
 
-function deleteTransaction(index) {
-    transactions.splice(index, 1);
-    updateUI();
+list.appendChild(item)
 }
 
-updateUI();
+function addTransaction(e){
+
+e.preventDefault()
+
+const transaction = {
+id:Date.now(),
+text:text.value,
+amount:+amount.value
+}
+
+transactions.push(transaction)
+
+addTransactionDOM(transaction)
+
+updateValues()
+
+localStorage.setItem("transactions",JSON.stringify(transactions))
+
+text.value=""
+amount.value=""
+}
+
+form.addEventListener("submit",addTransaction)
+
+transactions.forEach(addTransactionDOM)
+
+updateValues()
