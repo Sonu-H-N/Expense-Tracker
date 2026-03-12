@@ -10,6 +10,7 @@ A professional expense tracker web app built using HTML, CSS and JavaScript.
 - Responsive UI
 
 ## Technologies Used
+
 HTML
 CSS
 JavaScript
