@@ -72,3 +72,20 @@ display:flex;
 justify-content:space-between;
 border-radius:5px;
 }
+.dark{
+background:#0f172a;
+color:white;
+}
+
+.dark .container{
+background:#1e293b;
+}
+
+.light{
+background:white;
+color:black;
+}
+
+.light .container{
+background:#f1f5f9;
+}
