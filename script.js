@@ -35,10 +35,14 @@ const item = document.createElement("li")
 item.innerHTML = `
 ${transaction.text} (${transaction.category})
 <span>₹${transaction.amount}</span>
+
+<button onclick="editTransaction(${transaction.id})">✏️</button>
+
 <button onclick="removeTransaction(${transaction.id})">❌</button>
 `
 
 list.appendChild(item)
+
 }
 
 function removeTransaction(id){
@@ -48,6 +52,17 @@ transactions = transactions.filter(t => t.id !== id)
 localStorage.setItem("transactions",JSON.stringify(transactions))
 
 init()
+}
+function editTransaction(id){
+
+const transaction = transactions.find(t => t.id === id)
+
+text.value = transaction.text
+amount.value = transaction.amount
+category.value = transaction.category
+
+removeTransaction(id)
+
 }
 
 function addTransaction(e){
