@@ -83,3 +83,36 @@ updateValues()
 form.addEventListener("submit",addTransaction)
 
 init()
+updateChart()
+function updateChart(){
+
+const ctx = document.getElementById("expenseChart")
+
+const categories = {}
+  
+transactions.forEach(t=>{
+  
+if(!categories[t.category]){
+categories[t.category] = 0
+}
+
+categories[t.category] += Math.abs(t.amount)
+
+})
+
+const labels = Object.keys(categories)
+const data = Object.values(categories)
+
+new Chart(ctx,{
+type:'pie',
+
+data:{
+labels:labels,
+datasets:[{
+label:'Expenses',
+data:data
+}]
+}
+
+})
+}
