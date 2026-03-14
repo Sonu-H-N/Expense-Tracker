@@ -138,3 +138,30 @@ toggleBtn.addEventListener("click",()=>{
 document.body.classList.toggle("dark")
 
 })
+const search = document.getElementById("search")
+
+search.addEventListener("keyup", filterTransactions)
+
+function filterTransactions(){
+
+const textValue = search.value.toLowerCase()
+
+const items = list.getElementsByTagName("li")
+
+Array.from(items).forEach(function(item){
+
+const text = item.textContent.toLowerCase()
+
+if(text.indexOf(textValue) != -1){
+
+item.style.display = "flex"
+
+}else{
+
+item.style.display = "none"
+
+}
+
+})
+
+}
