@@ -165,3 +165,30 @@ item.style.display = "none"
 })
 
 }
+const downloadBtn = document.getElementById("downloadCSV")
+
+downloadBtn.addEventListener("click", downloadCSV)
+
+function downloadCSV(){
+
+let csv = "Description,Category,Amount\n"
+
+transactions.forEach(t => {
+
+csv += `${t.text},${t.category},${t.amount}\n`
+
+})
+
+const blob = new Blob([csv], { type: "text/csv" })
+
+const url = window.URL.createObjectURL(blob)
+
+const a = document.createElement("a")
+
+a.setAttribute("href", url)
+
+a.setAttribute("download", "expense-report.csv")
+
+a.click()
+
+}
