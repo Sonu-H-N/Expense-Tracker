@@ -81,6 +81,7 @@ transactions.push(transaction)
 localStorage.setItem("transactions",JSON.stringify(transactions))
 
 init()
+updateMonthlyChart()
 
 text.value=""
 amount.value=""
@@ -190,5 +191,45 @@ a.setAttribute("href", url)
 a.setAttribute("download", "expense-report.csv")
 
 a.click()
+
+}
+function updateMonthlyChart(){
+
+const ctx = document.getElementById("monthlyChart")
+
+const months = {}
+
+transactions.forEach(t => {
+
+const date = new Date(t.id)
+
+const month = date.toLocaleString('default', { month: 'short' })
+
+if(!months[month]){
+months[month] = 0
+}
+
+if(t.amount < 0){
+months[month] += Math.abs(t.amount)
+}
+
+})
+
+const labels = Object.keys(months)
+const data = Object.values(months)
+
+new Chart(ctx,{
+
+type:'bar',
+
+data:{
+labels:labels,
+datasets:[{
+label:'Monthly Expenses',
+data:data
+}]
+}
+
+})
 
 }
