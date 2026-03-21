@@ -89,3 +89,63 @@ color:black;
 .light .container{
 background:#f1f5f9;
 }
+body{
+font-family: 'Segoe UI', sans-serif;
+margin:0;
+background:#0f172a;
+color:white;
+}
+
+.container{
+max-width:500px;
+margin:auto;
+padding:20px;
+}
+
+.card{
+background:#1e293b;
+padding:15px;
+margin:15px 0;
+border-radius:12px;
+box-shadow:0 4px 10px rgba(0,0,0,0.3);
+}
+
+.summary{
+display:flex;
+justify-content:space-between;
+}
+
+input,select,button{
+width:100%;
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+}
+
+button{
+background:#38bdf8;
+color:white;
+cursor:pointer;
+}
+
+ul{
+list-style:none;
+padding:0;
+}
+
+li{
+background:#334155;
+padding:10px;
+margin:5px 0;
+display:flex;
+justify-content:space-between;
+border-radius:8px;
+}
+
+/* Responsive */
+@media(max-width:600px){
+.container{
+padding:10px;
+}
+}
