@@ -52,6 +52,7 @@ transactions = transactions.filter(t => t.id !== id)
 localStorage.setItem("transactions",JSON.stringify(transactions))
 
 init()
+updateBudget()
 }
 function editTransaction(id){
 
@@ -231,5 +232,43 @@ data:data
 }
 
 })
+
+}
+const budgetInput = document.getElementById("budgetInput")
+const setBudgetBtn = document.getElementById("setBudget")
+const budgetDisplay = document.getElementById("budget")
+const remainingDisplay = document.getElementById("remaining")
+
+let budget = localStorage.getItem("budget") || 0
+
+budgetDisplay.innerText = budget
+
+setBudgetBtn.addEventListener("click", () => {
+
+budget = budgetInput.value
+
+localStorage.setItem("budget", budget)
+
+budgetDisplay.innerText = budget
+
+updateBudget()
+
+})
+function updateBudget(){
+
+const totalExpense = transactions
+.filter(t => t.amount < 0)
+.reduce((acc,t)=>acc + Math.abs(t.amount),0)
+
+const remaining = budget - totalExpense
+
+remainingDisplay.innerText = `Remaining: ₹${remaining}`
+
+if(remaining < 0){
+remainingDisplay.style.color = "red"
+remainingDisplay.innerText += " ⚠️ Budget Exceeded!"
+}else{
+remainingDisplay.style.color = "lightgreen"
+}
 
 }
