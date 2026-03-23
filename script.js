@@ -1,3 +1,4 @@
+let categoryBudgets = JSON.parse(localStorage.getItem("categoryBudgets")) || {}
 const balance = document.getElementById("balance")
 const income = document.getElementById("income")
 const expense = document.getElementById("expense")
@@ -309,9 +310,57 @@ transactions = JSON.parse(event.target.result)
 localStorage.setItem("transactions", JSON.stringify(transactions))
 
 init()
+updateCategoryBudget()
 
 }
 
 reader.readAsText(file)
+
+}
+const budgetCategory = document.getElementById("budgetCategory")
+const categoryBudgetInput = document.getElementById("categoryBudgetInput")
+const setCategoryBudgetBtn = document.getElementById("setCategoryBudget")
+
+setCategoryBudgetBtn.addEventListener("click", () => {
+
+const category = budgetCategory.value
+const amount = categoryBudgetInput.value
+
+categoryBudgets[category] = amount
+
+localStorage.setItem("categoryBudgets", JSON.stringify(categoryBudgets))
+
+alert("Category budget set!")
+
+updateCategoryBudget()
+
+})
+function updateCategoryBudget(){
+
+const spent = {}
+
+transactions.forEach(t => {
+
+if(t.amount < 0){
+
+if(!spent[t.category]){
+spent[t.category] = 0
+}
+
+spent[t.category] += Math.abs(t.amount)
+
+}
+
+})
+
+for(let cat in categoryBudgets){
+
+if(spent[cat] > categoryBudgets[cat]){
+
+alert(`⚠️ Budget exceeded for ${cat}!`)
+
+}
+
+}
 
 }
