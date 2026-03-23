@@ -272,3 +272,46 @@ remainingDisplay.style.color = "lightgreen"
 }
 
 }
+const backupBtn = document.getElementById("backupData")
+
+backupBtn.addEventListener("click", backupData)
+
+function backupData(){
+
+const data = JSON.stringify(transactions)
+
+const blob = new Blob([data], { type: "application/json" })
+
+const url = URL.createObjectURL(blob)
+
+const a = document.createElement("a")
+
+a.href = url
+a.download = "expense-backup.json"
+
+a.click()
+
+}
+const restoreFile = document.getElementById("restoreFile")
+
+restoreFile.addEventListener("change", restoreData)
+
+function restoreData(e){
+
+const file = e.target.files[0]
+
+const reader = new FileReader()
+
+reader.onload = function(event){
+
+transactions = JSON.parse(event.target.result)
+
+localStorage.setItem("transactions", JSON.stringify(transactions))
+
+init()
+
+}
+
+reader.readAsText(file)
+
+}
