@@ -364,3 +364,6 @@ alert(`⚠️ Budget exceeded for ${cat}!`)
 }
 
 }
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("service-worker.js")
+}
