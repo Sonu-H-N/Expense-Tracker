@@ -1,19 +1,7 @@
-# Expense Tracker
+💰 Advanced Expense Tracker
 
-A professional expense tracker web app built using HTML, CSS and JavaScript.
+A modern Expense Tracker Web App built using HTML, CSS, and JavaScript with powerful features like charts, budget tracking, search, and offline support.
 
-## Features
-- Add income and expenses
-- Transaction history
-- Balance calculation
-- Local storage support
-- Responsive UI
+🚀 Live Demo
 
-## Technologies Used
-
-HTML
-CSS
-JavaScript
-
-## Author
-Sonu
+👉 https://Sonu-H-N.github.io/Expense-Tracker
