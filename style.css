@@ -165,3 +165,29 @@ select {
 canvas {
     margin-top: 20px;
 }
+/* Dark Mode */
+.dark {
+    background: #0f172a;
+    color: white;
+}
+
+.dark .container {
+    background: #1e293b;
+}
+
+.dark input,
+.dark select {
+    background: #334155;
+    color: white;
+    border: none;
+}
+
+.dark li {
+    background: #334155;
+}
+
+#toggle {
+    margin-bottom: 10px;
+    padding: 8px;
+    cursor: pointer;
+}

@@ -84,3 +84,24 @@ function updateChart() {
     });
 }
 updateChart();
+const toggle = document.getElementById("toggle");
+
+// Load saved mode
+if (localStorage.getItem("mode") === "dark") {
+    document.body.classList.add("dark");
+}
+
+toggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+
+    if (document.body.classList.contains("dark")) {
+        localStorage.setItem("mode", "dark");
+        toggle.innerText = "☀️ Light Mode";
+    } else {
+        localStorage.setItem("mode", "light");
+        toggle.innerText = "🌙 Dark Mode";
+    }
+});
+if (document.body.classList.contains("dark")) {
+    toggle.innerText = "☀️ Light Mode";
+}
