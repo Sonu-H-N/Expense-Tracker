@@ -8,6 +8,7 @@
 <input type="number" id="budgetInput" placeholder="Enter budget">
 <button id="setBudget">Set Budget</button>
 <link rel="manifest" href="manifest.json">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <p>Budget: ₹<span id="budget">0</span></p>
 <p id="remaining"></p>
@@ -16,6 +17,7 @@
 <div class="card">
 <h2>Balance</h2>
 <h3 id="balance">₹0</h3>
+<canvas id="chart"></canvas>
 </div>
 <div class="card">
 <h3>Category Budget</h3>

@@ -52,3 +52,35 @@ function deleteTransaction(index) {
 }
 
 updateUI();
+let chart;
+
+function updateChart() {
+    const categoryTotals = {};
+
+    transactions.forEach(t => {
+        if (!categoryTotals[t.category]) {
+            categoryTotals[t.category] = 0;
+        }
+        categoryTotals[t.category] += Math.abs(t.amount);
+    });
+
+    const labels = Object.keys(categoryTotals);
+    const data = Object.values(categoryTotals);
+
+    if (chart) {
+        chart.destroy();
+    }
+
+    const ctx = document.getElementById("chart").getContext("2d");
+
+    chart = new Chart(ctx, {
+        type: "pie",
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data
+            }]
+        }
+    });
+}
+updateChart();

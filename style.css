@@ -162,3 +162,6 @@ select {
 .minus {
     border-right: 5px solid red;
 }
+canvas {
+    margin-top: 20px;
+}
