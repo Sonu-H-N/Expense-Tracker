@@ -149,3 +149,16 @@ border-radius:8px;
 padding:10px;
 }
 }
+select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.plus {
+    border-right: 5px solid green;
+}
+
+.minus {
+    border-right: 5px solid red;
+}
