@@ -6,6 +6,19 @@ A modern Expense Tracker Web App built using HTML, CSS, and JavaScript with powe
 
 👉 https://Sonu-H-N.github.io/Expense-Tracker
 
+Expense-Tracker
+│
+├── index.html
+├── style.css
+├── script.js
+│
+├── assets/
+│   ├── icons/
+│   └── images/
+│
+├── service-worker.js
+└── manifest.json
+
 📌 Features
 
 💵 Core Features
@@ -38,3 +51,12 @@ Responsive design (mobile friendly)
 📱 Advanced Features
 PWA support (Install as App)
 Offline functionality using Service Worker
+
+## 🧑‍💻 Tech Stack
+
+- HTML5
+- CSS3 (Flexbox & Grid)
+- JavaScript (ES6+)
+- Chart.js (Data Visualization)
+- LocalStorage (Data Persistence)
+- Service Workers (PWA & Offline Support)
