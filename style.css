@@ -191,3 +191,9 @@ canvas {
     padding: 8px;
     cursor: pointer;
 }
+.backup-box{
+margin-top:20px;
+padding:15px;
+border-radius:12px;
+background:rgba(255,255,255,0.1);
+}

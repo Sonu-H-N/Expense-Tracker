@@ -105,3 +105,48 @@ toggle.addEventListener("click", () => {
 if (document.body.classList.contains("dark")) {
     toggle.innerText = "☀️ Light Mode";
 }
+function exportData(){
+
+let data = localStorage.getItem("financeData")
+
+if(!data){
+alert("No data to backup")
+return
+}
+
+let blob = new Blob([data], { type: "application/json" })
+
+let link = document.createElement("a")
+
+link.href = URL.createObjectURL(blob)
+link.download = "finance_backup.json"
+
+link.click()
+
+}
+function importData(event){
+
+let file = event.target.files[0]
+
+if(!file) return
+
+let reader = new FileReader()
+
+reader.onload = function(e){
+
+localStorage.setItem("financeData", e.target.result)
+
+alert("Data restored successfully!")
+
+loadHistory()
+createMonthlyChart()
+updateSummary()
+createCategoryChart()
+generateInsights()
+generateCalendar()
+
+}
+
+reader.readAsText(file)
+
+}
