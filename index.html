@@ -1,106 +1,85 @@
-<div class="container">
-
-<h1>💰 Expense Tracker</h1>
-
-<button id="toggleTheme">🌙</button>
-<div class="card">
-<h3>Set Monthly Budget</h3>
-<input type="number" id="budgetInput" placeholder="Enter budget">
-<button id="setBudget">Set Budget</button>
-<link rel="manifest" href="manifest.json">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<button id="toggle">🌙 Dark Mode</button>
-<p>Budget: ₹<span id="budget">0</span></p>
-<p id="remaining"></p>
-</div>
-
-<div class="card">
-<h2>Balance</h2>
-<h3 id="balance">₹0</h3>
-<canvas id="chart"></canvas>
-</div>
-<div class="card">
-<h3>Category Budget</h3>
-
-<select id="budgetCategory">
-<option value="Food">Food</option>
-<option value="Travel">Travel</option>
-<option value="Shopping">Shopping</option>
-<option value="Salary">Salary</option>
-</select>
-
-<input type="number" id="categoryBudgetInput" placeholder="Set category budget">
-
-<button id="setCategoryBudget">Set Category Budget</button>
-
-</div>
-
-
-<div class="card summary">
-<div>
-<h4>Income</h4>
-<p id="income">₹0</p>
-</div>
-
-<div>
-<h4>Expense</h4>
-<p id="expense">₹0</p>
-</div>
-</div>
-
-<div class="card">
-<h3>Add Transaction</h3>
-<form id="form">
-<input type="text" id="text" placeholder="Description" required>
-<select id="category"></select>
-<input type="number" id="amount" placeholder="Amount" required>
-<button>Add</button>
-</form>
-</div>
-
-<div class="card">
-<h3>Search</h3>
-<input type="text" id="search" placeholder="Search...">
-</div>
-
-<div class="card">
-<h3>History</h3>
-<ul id="list"></ul>
-</div>
-
-<div class="card">
-<h3>Charts</h3>
-<canvas id="expenseChart"></canvas>
-<canvas id="monthlyChart"></canvas>
-</div>
-
-<select id="category" required>
-    <option value="">Select Category</option>
-    <option value="Food">Food 🍔</option>
-    <option value="Travel">Travel ✈️</option>
-    <option value="Shopping">Shopping 🛍️</option>
-    <option value="Salary">Salary 💰</option>
-</select>
-<button id="downloadCSV">Download Report</button>
-<div class="card">
-<h3>Backup & Restore</h3>
-
-<button id="backupData">Backup Data</button>
-
-<input type="file" id="restoreFile">
-
-</div>
-
-</div>
-<div class="backup-box">
-
-<h3>💾 Data Backup</h3>
-
-<button onclick="exportData()" class="calc-btn">
-Backup Data
-</button>
-
-<input type="file" id="importFile" onchange="importData(event)">
-
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Expense Tracker</h1>
+        <button id="toggle">🌙 Dark Mode</button>
+        <div class="card">
+            <h3>Set Monthly Budget</h3>
+            <input type="number" id="budgetInput" placeholder="Enter budget">
+            <button id="setBudget">Set Budget</button>
+            <p>Budget: ₹<span id="budget">0</span></p>
+            <p id="remaining"></p>
+        </div>
+        <div class="card">
+            <h2>Balance</h2>
+            <h3 id="balance">₹0</h3>
+            <canvas id="chart"></canvas>
+        </div>
+        <div class="card">
+            <h3>Category Budget</h3>
+            <select id="budgetCategory">
+                <option value="Food">Food</option>
+                <option value="Travel">Travel</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Salary">Salary</option>
+            </select>
+            <input type="number" id="categoryBudgetInput" placeholder="Set category budget">
+            <button id="setCategoryBudget">Set Category Budget</button>
+        </div>
+        <div class="card summary">
+            <div>
+                <h4>Income</h4>
+                <p id="income">₹0</p>
+            </div>
+            <div>
+                <h4>Expense</h4>
+                <p id="expense">₹0</p>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Add Transaction</h3>
+            <form id="form">
+                <input type="text" id="text" placeholder="Description" required>
+                <select id="category" required>
+                    <option value="">Select Category</option>
+                    <option value="Food">Food 🍔</option>
+                    <option value="Travel">Travel ✈️</option>
+                    <option value="Shopping">Shopping 🛍️</option>
+                    <option value="Salary">Salary 💰</option>
+                </select>
+                <input type="number" id="amount" placeholder="Amount" required>
+                <button>Add</button>
+            </form>
+        </div>
+        <div class="card">
+            <h3>Search</h3>
+            <input type="text" id="search" placeholder="Search...">
+        </div>
+        <div class="card">
+            <h3>History</h3>
+            <ul id="list"></ul>
+        </div>
+        <div class="card">
+            <h3>Charts</h3>
+            <canvas id="expenseChart"></canvas>
+            <canvas id="monthlyChart"></canvas>
+        </div>
+        <button id="downloadCSV">Download Report</button>
+        <div class="card">
+            <h3>Backup & Restore</h3>
+            <button id="backupData">Backup Data</button>
+            <input type="file" id="restoreFile">
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
