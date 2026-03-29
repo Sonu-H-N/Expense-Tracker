@@ -1,10 +1,11 @@
 {
-  "name": "Expense Tracker",
-  "short_name": "Tracker",
+  "name": "Expense Tracker Pro",
+  "short_name": "ExpenseTracker",
+  "description": "Professional expense tracking application",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#38bdf8",
+  "background_color": "#f8fafc",
+  "theme_color": "#6366f1",
   "icons": [
     {
       "src": "icon.png",
