@@ -6,11 +6,11 @@
     --info-color: #06b6d4;
     --income-color: #22c55e;
     --expense-color: #f43f5e;
-    --bg-primary: #f8fafc;
-    --bg-secondary: #ffffff;
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
-    --border-color: #e2e8f0;
+    --bg-primary: #e0f2fe; /* Light blue background */
+    --bg-secondary: #ffffff; /* White cards */
+    --text-primary: #0f172a; /* Dark text for contrast */
+    --text-secondary: #475569; /* Medium gray text */
+    --border-color: #cbd5e1; /* Light border */
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
