@@ -1,10 +1,87 @@
-💰 Advanced Expense Tracker
+# 💰 Expense Tracker Pro
 
-A modern Expense Tracker Web App built using HTML, CSS, and JavaScript with powerful features like charts, budget tracking, search, and offline support.
+A modern and professional **Expense Tracker Web Application** built using HTML, CSS, and JavaScript.  
+Track your income, expenses, and budgets with powerful features like charts, backup/restore, and offline support.
 
-🚀 Live Demo
+---
 
+## 🚀 Live Demo
 👉 https://Sonu-H-N.github.io/Expense-Tracker
+
+---
+
+## 📸 Preview
+
+![App Preview](assets/images/preview.png)
+
+---
+
+## ✨ Features
+
+### 💵 Core Features
+- Add income and expense transactions
+- Delete transactions
+- Real-time balance calculation
+- Category-based tracking
+- Date tracking for each transaction
+
+---
+
+### 📊 Dashboard Features
+- Expense distribution chart (Chart.js)
+- Income vs Expense summary
+- Remaining budget calculation
+
+---
+
+### 🎯 Budget Features
+- Set monthly budget
+- Track remaining balance
+- Visual budget awareness
+
+---
+
+### 🔍 Smart Features
+- Search transactions instantly
+- Filter by description or category
+- Fast UI updates
+
+---
+
+### 📂 Data Management
+- 📊 Export transactions as CSV
+- 💾 Backup data (JSON file)
+- 📂 Restore data anytime
+
+---
+
+### 🎨 UI/UX Features
+- Clean and modern UI
+- Fully responsive design 📱
+- Dark mode toggle 🌙
+- Smooth animations
+
+---
+
+### 📱 PWA Features
+- Install as mobile app
+- Works offline using Service Worker
+- Fast loading (cached assets)
+
+---
+
+## 🧑‍💻 Tech Stack
+
+- **HTML5**
+- **CSS3 (Flexbox + Grid)**
+- **JavaScript (ES6+)**
+- **Chart.js**
+- **LocalStorage**
+- **Service Workers (PWA)**
+
+---
+
+## 📁 Project Structure
 
 Expense-Tracker
 │
@@ -13,50 +90,57 @@ Expense-Tracker
 ├── script.js
 │
 ├── assets/
-│   ├── icons/
-│   └── images/
+│ ├── icons/
+│ └── images/
 │
 ├── service-worker.js
 └── manifest.json
 
-📌 Features
 
-💵 Core Features
-Add income and expense transactions
-Edit and delete transactions
-Real-time balance calculation
-Category-based tracking
+---
 
-📊 Dashboard Features
-Expense Pie Chart (Category-wise)
-Monthly Expense Graph
-Summary of income and expenses
+## ⚙️ Installation & Setup
 
-🔍 Smart Features
-Search transactions
-Category filtering
-CSV export (Download report)
-Backup & Restore (JSON)
+```bash
+# Clone the repository
+git clone https://github.com/Sonu-H-N/Expense-Tracker.git
 
-🎯 Budget Features
-Monthly budget limit
-Category-wise budget tracking
-Budget alerts & warnings
+# Open project folder
+cd Expense-Tracker
 
-🎨 UI/UX Features
-Modern card-based UI
-Dark mode toggle 🌙
-Responsive design (mobile friendly)
+# Run locally
+Open index.html in browser
 
-📱 Advanced Features
-PWA support (Install as App)
-Offline functionality using Service Worker
+📤 Deployment
 
-## 🧑‍💻 Tech Stack
+You can deploy easily using:
 
-- HTML5
-- CSS3 (Flexbox & Grid)
-- JavaScript (ES6+)
-- Chart.js (Data Visualization)
-- LocalStorage (Data Persistence)
-- Service Workers (PWA & Offline Support)
+GitHub Pages
+Netlify
+Vercel
+🧠 Future Enhancements
+✏️ Edit transactions
+🔐 User authentication (Firebase)
+☁️ Cloud sync
+📊 Advanced analytics dashboard
+🤖 AI-based spending insights
+🤝 Contributing
+
+Contributions are welcome!
+Feel free to fork this repo and improve the project.
+
+📜 License
+
+This project is open-source and available under the MIT License.
+
+👨‍💻 Author
+
+Sonu H N
+
+⭐ Support
+
+If you like this project:
+
+⭐ Star this repo
+🍴 Fork it
+📢 Share it
