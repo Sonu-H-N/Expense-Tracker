@@ -118,6 +118,7 @@ You can deploy easily using:
 GitHub Pages
 Netlify
 Vercel
+
 🧠 Future Enhancements
 ✏️ Edit transactions
 🔐 User authentication (Firebase)

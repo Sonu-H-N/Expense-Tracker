@@ -8,9 +8,7 @@
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#6366f1">
-
-    <!-- SEO -->
-    <meta name="description" content="Track your income and expenses with a modern dashboard">
+    <meta name="description" content="Track your income and expenses with charts, budgets, CSV export, and offline support.">
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -25,111 +23,152 @@
     <!-- HEADER -->
     <header class="app-header">
         <div class="header-content">
-            <h1><span class="icon">💰</span> Expense Tracker Pro</h1>
-
+            <div class="brand">
+                <span class="brand-icon">💰</span>
+                <div>
+                    <h1>Expense Tracker Pro</h1>
+                    <p class="brand-sub">Personal finance, simplified</p>
+                </div>
+            </div>
             <button id="toggle" class="theme-toggle">
-                <span class="toggle-icon">🌙</span>
-                <span class="toggle-text">Dark Mode</span>
+                <span class="toggle-icon" id="toggleIcon">🌙</span>
+                <span class="toggle-text" id="toggleText">Dark Mode</span>
             </button>
         </div>
     </header>
 
-    <!-- DASHBOARD -->
+    <!-- SUMMARY STRIP -->
+    <div class="summary-strip">
+        <div class="summary-chip income-chip">
+            <span class="chip-label">Income</span>
+            <span class="chip-value" id="income">₹0</span>
+        </div>
+        <div class="summary-chip balance-chip">
+            <span class="chip-label">Balance</span>
+            <span class="chip-value" id="balance">₹0</span>
+        </div>
+        <div class="summary-chip expense-chip">
+            <span class="chip-label">Expenses</span>
+            <span class="chip-value" id="expense">₹0</span>
+        </div>
+    </div>
+
+    <!-- DASHBOARD GRID -->
     <div class="dashboard-grid">
-
-        <!-- BUDGET -->
-        <div class="card budget-card">
-            <h3 class="card-title">Monthly Budget</h3>
-
-            <div class="budget-input-group">
-                <input type="number" id="budgetInput" placeholder="Enter monthly budget" class="input-primary">
-                <button id="setBudget" class="btn btn-primary">Set Budget</button>
-            </div>
-
-            <div class="budget-display">
-                <div class="budget-item">
-                    <span>Total Budget</span>
-                    <span>₹<span id="budget">0</span></span>
-                </div>
-                <div id="remaining"></div>
-            </div>
-        </div>
-
-        <!-- BALANCE -->
-        <div class="card balance-card">
-            <h3 class="card-title">Current Balance</h3>
-            <div class="balance-amount" id="balance">₹0</div>
-
-            <div class="chart-container">
-                <canvas id="chart"></canvas>
-            </div>
-        </div>
-
-        <!-- SUMMARY -->
-        <div class="card summary-card">
-            <div class="summary-item">
-                <h4>Income</h4>
-                <p id="income">₹0</p>
-            </div>
-
-            <div class="summary-item">
-                <h4>Expense</h4>
-                <p id="expense">₹0</p>
-            </div>
-        </div>
 
         <!-- ADD TRANSACTION -->
         <div class="card transaction-card">
-            <h3 class="card-title">Add Transaction</h3>
+            <h3 class="card-title">➕ Add Transaction</h3>
 
             <form id="form">
-                <input type="text" id="text" placeholder="Description" required class="input-primary">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" id="text" placeholder="e.g. Grocery shopping" required class="input-primary">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="category" required class="input-primary">
+                            <option value="">Select category</option>
+                            <option value="Food">🍔 Food</option>
+                            <option value="Travel">✈️ Travel</option>
+                            <option value="Shopping">🛍️ Shopping</option>
+                            <option value="Salary">💰 Salary</option>
+                            <option value="Bills">💡 Bills</option>
+                            <option value="Entertainment">🎮 Entertainment</option>
+                            <option value="Health">🏥 Health</option>
+                            <option value="Other">📦 Other</option>
+                        </select>
+                    </div>
+                </div>
 
-                <select id="category" required class="input-primary">
-                    <option value="">Select Category</option>
-                    <option value="Food">🍔 Food</option>
-                    <option value="Travel">✈️ Travel</option>
-                    <option value="Shopping">🛍️ Shopping</option>
-                    <option value="Salary">💰 Salary</option>
-                    <option value="Bills">💡 Bills</option>
-                    <option value="Entertainment">🎮 Entertainment</option>
-                    <option value="Other">📦 Other</option>
-                </select>
-
-                <input type="number" id="amount" placeholder="Amount (+ income, - expense)" required class="input-primary">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Amount <small>(+ income, − expense)</small></label>
+                        <input type="number" id="amount" placeholder="e.g. 500 or -200" required class="input-primary" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="date" required class="input-primary">
+                    </div>
+                </div>
 
                 <button class="btn btn-primary btn-block">Add Transaction</button>
             </form>
         </div>
 
-        <!-- SEARCH -->
-        <div class="card search-card">
-            <h3 class="card-title">Search</h3>
-            <input type="text" id="search" placeholder="Search transactions..." class="input-primary">
+        <!-- CHART -->
+        <div class="card chart-card">
+            <h3 class="card-title">📊 Expense Breakdown</h3>
+            <div class="chart-wrap">
+                <canvas id="chart"></canvas>
+            </div>
+            <p class="chart-empty" id="chartEmpty">Add expenses to see the breakdown</p>
+        </div>
+
+        <!-- BUDGET -->
+        <div class="card budget-card">
+            <h3 class="card-title">🎯 Monthly Budget</h3>
+
+            <div class="budget-input-row">
+                <input type="number" id="budgetInput" placeholder="Set budget (₹)" class="input-primary" min="0" step="0.01">
+                <button id="setBudget" class="btn btn-primary">Set</button>
+            </div>
+
+            <div class="budget-stats" id="budgetStats">
+                <div class="budget-row">
+                    <span class="budget-label">Budget</span>
+                    <span class="budget-value">₹<span id="budget">0</span></span>
+                </div>
+                <div class="budget-row">
+                    <span class="budget-label">Spent</span>
+                    <span class="budget-value expense-text" id="budgetSpent">₹0</span>
+                </div>
+                <div class="budget-row">
+                    <span class="budget-label">Remaining</span>
+                    <span class="budget-value" id="remaining">₹0</span>
+                </div>
+                <div class="budget-bar-wrap">
+                    <div class="budget-bar" id="budgetBar"></div>
+                </div>
+                <p class="budget-status" id="budgetStatus"></p>
+            </div>
         </div>
 
         <!-- HISTORY -->
         <div class="card history-card">
-            <h3 class="card-title">Transaction History</h3>
-            <ul id="list"></ul>
+            <div class="history-header">
+                <h3 class="card-title">📋 Transaction History</h3>
+                <input type="text" id="search" placeholder="🔍 Search..." class="search-input">
+            </div>
+            <ul id="list">
+                <li class="empty-state">No transactions yet — add your first one.</li>
+            </ul>
         </div>
 
-        <!-- ACTIONS -->
+        <!-- DATA ACTIONS -->
         <div class="card actions-card">
-            <h3 class="card-title">Data</h3>
-
-            <button id="downloadCSV" class="btn btn-success">Download CSV</button>
-            <button id="backupData" class="btn btn-info">Backup</button>
-
-            <input type="file" id="restoreFile" hidden>
-            <label for="restoreFile" class="btn btn-warning">Restore</label>
+            <h3 class="card-title">💾 Data</h3>
+            <div class="actions-grid">
+                <button id="downloadCSV" class="btn btn-success">
+                    <span>📥</span> Export CSV
+                </button>
+                <button id="backupData" class="btn btn-info">
+                    <span>💾</span> Backup JSON
+                </button>
+                <label for="restoreFile" class="btn btn-warning">
+                    <span>📂</span> Restore
+                </label>
+                <input type="file" id="restoreFile" accept=".json" hidden>
+            </div>
+            <p class="actions-hint">Backup saves everything. Restore from any previous backup.</p>
         </div>
 
     </div>
 
     <!-- FOOTER -->
     <footer class="app-footer">
-        <p>© 2026 Expense Tracker Pro | Built by Sonu 🚀</p>
+        <p>© 2026 Expense Tracker Pro · Built by Sonu 🚀</p>
     </footer>
 
 </div>
@@ -140,9 +179,8 @@
 <!-- SERVICE WORKER -->
 <script>
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-    .then(() => console.log("Service Worker Registered"))
-    .catch(err => console.log("SW failed:", err));
+    navigator.serviceWorker.register('./service-worker.js')
+        .catch(err => console.log("SW registration failed:", err));
 }
 </script>
 
