@@ -1,65 +1,57 @@
-const CACHE_NAME = "expense-tracker-v3";
+/* ==========================================================
+   Expense Tracker Pro — Service Worker
+   Cache-first offline support for the full app shell
+   ========================================================== */
+
+const CACHE_NAME = "expense-tracker-v4";
+
 const STATIC_CACHE = [
-    "/",
-    "/index.html",
-    "/style.css",
-    "/script.js",
-    "/manifest.json"
+    "./",
+    "./index.html",
+    "./style.css",
+    "./script.js",
+    "./manifest.json",
+    "https://cdn.jsdelivr.net/npm/chart.js"
 ];
 
-/* ---------------- INSTALL ---------------- */
 self.addEventListener("install", event => {
-    console.log("Service Worker Installing...");
-
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-            console.log("Caching static files...");
-            return cache.addAll(STATIC_CACHE);
-        })
+        caches.open(CACHE_NAME)
+            .then(cache => cache.addAll(STATIC_CACHE))
+            .then(() => self.skipWaiting())
     );
-
-    self.skipWaiting();
 });
 
-/* ---------------- ACTIVATE ---------------- */
 self.addEventListener("activate", event => {
-    console.log("Service Worker Activated");
-
     event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cache => {
-                    if (cache !== CACHE_NAME) {
-                        console.log("Deleting old cache:", cache);
-                        return caches.delete(cache);
-                    }
-                })
-            );
-        })
+        caches.keys().then(keys =>
+            Promise.all(
+                keys
+                    .filter(k => k !== CACHE_NAME)
+                    .map(k => caches.delete(k))
+            )
+        ).then(() => self.clients.claim())
     );
-
-    self.clients.claim();
 });
 
-/* ---------------- FETCH ---------------- */
 self.addEventListener("fetch", event => {
+    if (event.request.method !== "GET") return;
+
     event.respondWith(
         caches.match(event.request).then(cached => {
             if (cached) return cached;
 
-            return fetch(event.request)
-                .then(response => {
-                    return caches.open(CACHE_NAME).then(cache => {
-                        cache.put(event.request, response.clone());
-                        return response;
-                    });
-                })
-                .catch(() => {
-                    // fallback if offline
-                    if (event.request.destination === "document") {
-                        return caches.match("/index.html");
-                    }
-                });
+            return fetch(event.request).then(response => {
+                if (response && response.status === 200) {
+                    const clone = response.clone();
+                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+                }
+                return response;
+            }).catch(() => {
+                if (event.request.mode === "navigate") {
+                    return caches.match("./index.html");
+                }
+            });
         })
     );
 });
