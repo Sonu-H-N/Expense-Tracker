@@ -9,6 +9,11 @@ const amountInput = document.getElementById("amount");
 const categoryInput = document.getElementById("category");
 const dateInput   = document.getElementById("date");
 const list        = document.getElementById("list");
+const recurringList = document.getElementById("recurringList");
+const isRecurringInput = document.getElementById("isRecurring");
+const recurringOptions = document.getElementById("recurringOptions");
+const recurringFrequencyInput = document.getElementById("recurringFrequency");
+const recurringEndDateInput = document.getElementById("recurringEndDate");
 
 const balanceEl   = document.getElementById("balance");
 const incomeEl    = document.getElementById("income");
@@ -35,15 +40,37 @@ const chartCanvas  = document.getElementById("chart");
 const chartEmptyEl = document.getElementById("chartEmpty");
 
 /* ── STATE ── */
-let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+let transactions = readArray("transactions");
+let recurringTransactions = readArray("recurringTransactions");
 let budget = parseFloat(localStorage.getItem("budget")) || 0;
 let chart;
+
+function readArray(key) {
+    try {
+        const value = JSON.parse(localStorage.getItem(key) || "[]");
+        return Array.isArray(value) ? value : [];
+    } catch {
+        return [];
+    }
+}
 
 /* ── FORMAT ── */
 function formatAmount(n) {
     return "₹" + Math.abs(n).toLocaleString("en-IN", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
+    });
+}
+
+function getTodayISO() {
+    const now = new Date();
+    const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    return localDate.toISOString().slice(0, 10);
+}
+
+function formatISODate(isoDate) {
+    return new Date(isoDate + "T00:00:00").toLocaleDateString("en-IN", {
+        day: "2-digit", month: "short", year: "numeric"
     });
 }
 
@@ -68,6 +95,7 @@ function showToast(msg) {
 function init() {
     loadTheme();
     setDefaultDate();
+    processDueRecurringTransactions();
     updateUI();
 }
 
@@ -80,11 +108,10 @@ function loadTheme() {
 }
 
 function setDefaultDate() {
-    const today = new Date().toISOString().split("T")[0];
-    dateInput.value = today;
+    dateInput.value = getTodayISO();
 }
 
-/* ── ADD TRANSACTION ── */
+/* ── ADD TRANSACTION / SCHEDULE ── */
 form.addEventListener("submit", function(e) {
     e.preventDefault();
 
@@ -92,8 +119,9 @@ form.addEventListener("submit", function(e) {
     const amt    = parseFloat(amountInput.value);
     const cat    = categoryInput.value;
     const txDate = dateInput.value;
+    const endDate = recurringEndDateInput.value;
 
-    if (!desc || isNaN(amt) || !cat || !txDate) {
+    if (!desc || !Number.isFinite(amt) || !cat || !txDate) {
         showToast("⚠️ Please fill all fields");
         return;
     }
@@ -103,27 +131,173 @@ form.addEventListener("submit", function(e) {
         return;
     }
 
-    const transaction = {
-        id:       Date.now(),
-        text:     desc,
-        amount:   amt,
-        category: cat,
-        date:     new Date(txDate + "T00:00:00").toLocaleDateString("en-IN", {
-                      day: "2-digit", month: "short", year: "numeric"
-                  })
-    };
+    if (isRecurringInput.checked && endDate && endDate < txDate) {
+        showToast("⚠️ End date must be on or after the start date");
+        return;
+    }
 
-    transactions.push(transaction);
-    saveToStorage();
+    if (isRecurringInput.checked) {
+        recurringTransactions.push({
+            id: createId(recurringTransactions),
+            text: desc,
+            amount: amt,
+            category: cat,
+            frequency: recurringFrequencyInput.value,
+            nextDate: txDate,
+            endDate: endDate || null,
+            anchorDay: Number(txDate.slice(8, 10)),
+            active: true
+        });
+        processDueRecurringTransactions();
+        showToast("✅ Recurring transaction scheduled");
+    } else {
+        transactions.push({
+            id: createId(transactions),
+            text: desc,
+            amount: amt,
+            category: cat,
+            date: formatISODate(txDate)
+        });
+        saveToStorage();
+        showToast("✅ Transaction added");
+    }
+
     updateUI();
     form.reset();
+    recurringOptions.hidden = true;
     setDefaultDate();
-    showToast("✅ Transaction added");
+});
+
+function createId(items) {
+    let id = Date.now();
+    while (items.some(item => String(item.id) === String(id))) id += 1;
+    return id;
+}
+
+/* ── RECURRING SCHEDULES ── */
+function nextOccurrence(dateString, frequency, anchorDay) {
+    const [year, month, day] = dateString.split("-").map(Number);
+    const date = new Date(Date.UTC(year, month - 1, day));
+
+    if (frequency === "weekly") {
+        date.setUTCDate(date.getUTCDate() + 7);
+    } else if (frequency === "monthly") {
+        const nextMonth = date.getUTCMonth() + 1;
+        const nextYear = date.getUTCFullYear() + Math.floor(nextMonth / 12);
+        const normalizedMonth = nextMonth % 12;
+        const lastDay = new Date(Date.UTC(nextYear, normalizedMonth + 1, 0)).getUTCDate();
+        date.setUTCFullYear(nextYear, normalizedMonth, Math.min(anchorDay || day, lastDay));
+    } else {
+        const nextYear = date.getUTCFullYear() + 1;
+        const lastDay = new Date(Date.UTC(nextYear, date.getUTCMonth() + 1, 0)).getUTCDate();
+        date.setUTCFullYear(nextYear, date.getUTCMonth(), Math.min(day, lastDay));
+    }
+
+    return date.toISOString().slice(0, 10);
+}
+
+function processDueRecurringTransactions() {
+    const today = getTodayISO();
+    let changed = false;
+
+    recurringTransactions.forEach(schedule => {
+        if (!schedule.active || !schedule.nextDate) return;
+
+        let occurrences = 0;
+        while (schedule.nextDate <= today && (!schedule.endDate || schedule.nextDate <= schedule.endDate)) {
+            // The marker makes processing safe to repeat after reloads or backup restores.
+            const alreadyAdded = transactions.some(tx =>
+                String(tx.recurringId) === String(schedule.id) && tx.recurringDate === schedule.nextDate
+            );
+            if (!alreadyAdded) {
+                transactions.push({
+                    id: createId(transactions),
+                    text: schedule.text,
+                    amount: Number(schedule.amount),
+                    category: schedule.category,
+                    date: formatISODate(schedule.nextDate),
+                    recurringId: schedule.id,
+                    recurringDate: schedule.nextDate
+                });
+            }
+
+            schedule.nextDate = nextOccurrence(schedule.nextDate, schedule.frequency, schedule.anchorDay);
+            changed = true;
+            occurrences += 1;
+            // Protect against malformed legacy data causing an unbounded loop.
+            if (occurrences > 5000) {
+                schedule.active = false;
+                break;
+            }
+        }
+
+        if (schedule.endDate && schedule.nextDate > schedule.endDate) {
+            schedule.active = false;
+            changed = true;
+        }
+    });
+
+    if (changed) saveToStorage();
+}
+
+function toggleRecurringSchedule(id) {
+    const schedule = recurringTransactions.find(item => String(item.id) === String(id));
+    if (!schedule) return;
+    schedule.active = !schedule.active;
+    saveToStorage();
+    renderRecurringList();
+    showToast(schedule.active ? "▶️ Schedule resumed" : "⏸️ Schedule paused");
+}
+
+function deleteRecurringSchedule(id) {
+    recurringTransactions = recurringTransactions.filter(item => String(item.id) !== String(id));
+    saveToStorage();
+    renderRecurringList();
+    showToast("🗑️ Recurring schedule deleted");
+}
+
+function renderRecurringList() {
+    recurringList.innerHTML = "";
+    if (!recurringTransactions.length) {
+        recurringList.innerHTML = '<li class="empty-state">No recurring transactions yet.</li>';
+        return;
+    }
+
+    recurringTransactions.forEach(schedule => {
+        const li = document.createElement("li");
+        li.className = "recurring-item";
+        const frequency = schedule.frequency ? schedule.frequency[0].toUpperCase() + schedule.frequency.slice(1) : "Monthly";
+        const nextDate = schedule.nextDate ? formatISODate(schedule.nextDate) : "Complete";
+        const status = schedule.active ? "Active" : "Paused";
+        const sign = Number(schedule.amount) > 0 ? "+" : "−";
+        li.innerHTML = `
+            <div class="tx-info">
+                <div class="tx-desc">${escapeHtml(schedule.text || "Untitled")}</div>
+                <div class="tx-meta">${escapeHtml(schedule.category || "Other")} · ${escapeHtml(frequency)} · Next: ${escapeHtml(nextDate)} · ${status}</div>
+            </div>
+            <span class="tx-amount ${Number(schedule.amount) > 0 ? "income-text" : "expense-text"}">${sign}${formatAmount(Number(schedule.amount) || 0)}</span>
+            <button class="schedule-action" type="button" data-action="toggle" data-id="${escapeHtml(String(schedule.id))}" aria-label="${schedule.active ? "Pause" : "Resume"} schedule">${schedule.active ? "⏸" : "▶"}</button>
+            <button class="tx-delete" type="button" data-action="delete" data-id="${escapeHtml(String(schedule.id))}" aria-label="Delete recurring schedule">✕</button>
+        `;
+        recurringList.appendChild(li);
+    });
+}
+
+recurringList.addEventListener("click", event => {
+    const button = event.target.closest("button[data-action]");
+    if (!button) return;
+    if (button.dataset.action === "toggle") toggleRecurringSchedule(button.dataset.id);
+    if (button.dataset.action === "delete") deleteRecurringSchedule(button.dataset.id);
+});
+
+isRecurringInput.addEventListener("change", () => {
+    recurringOptions.hidden = !isRecurringInput.checked;
+    recurringEndDateInput.required = false;
 });
 
 /* ── DELETE TRANSACTION ── */
 function deleteTransaction(id) {
-    transactions = transactions.filter(t => t.id !== id);
+    transactions = transactions.filter(t => String(t.id) !== String(id));
     saveToStorage();
     updateUI();
     showToast("🗑️ Transaction deleted");
@@ -132,12 +306,14 @@ function deleteTransaction(id) {
 /* ── STORAGE ── */
 function saveToStorage() {
     localStorage.setItem("transactions", JSON.stringify(transactions));
+    localStorage.setItem("recurringTransactions", JSON.stringify(recurringTransactions));
     localStorage.setItem("budget", budget);
 }
 
 /* ── UPDATE UI ── */
 function updateUI() {
     renderList(transactions);
+    renderRecurringList();
     updateSummary();
     updateBudget();
     updateChart();
@@ -151,7 +327,6 @@ function renderList(txns) {
         return;
     }
 
-    // Newest first
     const sorted = [...txns].sort((a, b) => b.id - a.id);
 
     sorted.forEach(t => {
@@ -160,13 +335,14 @@ function renderList(txns) {
         li.dataset.id = t.id;
 
         const sign = t.amount > 0 ? "+" : "−";
+        const recurringLabel = t.recurringId ? " · 🔁 Recurring" : "";
         li.innerHTML = `
             <div class="tx-info">
                 <div class="tx-desc">${escapeHtml(t.text)}</div>
-                <div class="tx-meta">${escapeHtml(t.category)} · ${escapeHtml(t.date)}</div>
+                <div class="tx-meta">${escapeHtml(t.category)} · ${escapeHtml(t.date)}${recurringLabel}</div>
             </div>
             <span class="tx-amount">${sign}${formatAmount(t.amount)}</span>
-            <button class="tx-delete" onclick="deleteTransaction(${t.id})" title="Delete">✕</button>
+            <button class="tx-delete" onclick="deleteTransaction('${escapeHtml(String(t.id))}')" title="Delete" aria-label="Delete transaction">✕</button>
         `;
 
         list.appendChild(li);
@@ -201,15 +377,11 @@ function updateBudget() {
     budgetSpent.textContent = formatAmount(expense);
     remainingEl.textContent = formatAmount(remaining);
 
-    // Color-code remaining
     remainingEl.className = "budget-value " + (remaining < 0 ? "over-budget" : "on-budget");
-
-    // Budget bar
     budgetBar.style.width = pct + "%";
     budgetBar.style.background = pct >= 90 ? "var(--danger)" :
                                   pct >= 70 ? "var(--warning)" : "var(--success)";
 
-    // Status message
     if (budget === 0) {
         budgetStatus.textContent = "Set a monthly budget to track your spending";
         budgetStatus.style.color = "";
@@ -288,7 +460,7 @@ function updateChart() {
 setBudgetBtn.addEventListener("click", () => {
     const val = parseFloat(budgetInput.value);
 
-    if (!budgetInput.value || isNaN(val) || val < 0) {
+    if (!budgetInput.value || !Number.isFinite(val) || val < 0) {
         showToast("⚠️ Enter a valid budget");
         return;
     }
@@ -312,7 +484,8 @@ searchInput.addEventListener("input", () => {
     const filtered = transactions.filter(t =>
         t.text.toLowerCase().includes(query) ||
         t.category.toLowerCase().includes(query) ||
-        t.date.toLowerCase().includes(query)
+        t.date.toLowerCase().includes(query) ||
+        (t.recurringId && "recurring".includes(query))
     );
 
     renderList(filtered);
@@ -328,7 +501,6 @@ toggle.addEventListener("click", () => {
     toggleIcon.textContent = isDark ? "☀️" : "🌙";
     toggleText.textContent = isDark ? "Light Mode" : "Dark Mode";
 
-    // Re-render chart with correct legend color
     updateChart();
     showToast(isDark ? "🌙 Dark mode" : "☀️ Light mode");
 });
@@ -345,8 +517,8 @@ downloadCSVBtn.addEventListener("click", () => {
     const sorted = [...transactions].sort((a, b) => b.id - a.id);
     sorted.forEach(t => {
         const type = t.amount > 0 ? "Income" : "Expense";
-        // Quote fields that may contain commas
-        csv += `"${t.date}","${t.text}","${t.category}",${Math.abs(t.amount)},${type}\n`;
+        const quote = value => `"${String(value).replace(/"/g, '""')}"`;
+        csv += `${quote(t.date)},${quote(t.text)},${quote(t.category)},${Math.abs(t.amount)},${type}\n`;
     });
 
     triggerDownload(csv, "text/csv", "transactions.csv");
@@ -355,12 +527,12 @@ downloadCSVBtn.addEventListener("click", () => {
 
 /* ── BACKUP ── */
 backupDataBtn.addEventListener("click", () => {
-    if (!transactions.length) {
+    if (!transactions.length && !recurringTransactions.length) {
         showToast("No data to backup");
         return;
     }
 
-    const data = JSON.stringify({ transactions, budget, date: new Date() }, null, 2);
+    const data = JSON.stringify({ transactions, recurringTransactions, budget, date: new Date() }, null, 2);
     triggerDownload(data, "application/json", "expense-tracker-backup.json");
     showToast("💾 Backup saved");
 });
@@ -374,12 +546,13 @@ restoreFile.addEventListener("change", e => {
     reader.onload = function(ev) {
         try {
             const data = JSON.parse(ev.target.result);
-
             if (!Array.isArray(data.transactions)) throw new Error("Invalid format");
 
             transactions = data.transactions;
+            recurringTransactions = Array.isArray(data.recurringTransactions) ? data.recurringTransactions : [];
             budget = parseFloat(data.budget) || 0;
 
+            processDueRecurringTransactions();
             saveToStorage();
             updateUI();
             showToast("✅ Data restored from backup");
@@ -388,8 +561,6 @@ restoreFile.addEventListener("change", e => {
         }
     };
     reader.readAsText(file);
-
-    // Reset so same file can be re-selected if needed
     restoreFile.value = "";
 });
 

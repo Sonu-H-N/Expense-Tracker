@@ -30,7 +30,7 @@
                     <p class="brand-sub">Personal finance, simplified</p>
                 </div>
             </div>
-            <button id="toggle" class="theme-toggle">
+            <button id="toggle" class="theme-toggle" type="button">
                 <span class="toggle-icon" id="toggleIcon">🌙</span>
                 <span class="toggle-text" id="toggleText">Dark Mode</span>
             </button>
@@ -63,11 +63,11 @@
             <form id="form">
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Description</label>
+                        <label for="text">Description</label>
                         <input type="text" id="text" placeholder="e.g. Grocery shopping" required class="input-primary">
                     </div>
                     <div class="form-group">
-                        <label>Category</label>
+                        <label for="category">Category</label>
                         <select id="category" required class="input-primary">
                             <option value="">Select category</option>
                             <option value="Food">🍔 Food</option>
@@ -84,12 +84,31 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Amount <small>(+ income, − expense)</small></label>
+                        <label for="amount">Amount <small>(+ income, − expense)</small></label>
                         <input type="number" id="amount" placeholder="e.g. 500 or -200" required class="input-primary" step="0.01">
                     </div>
                     <div class="form-group">
-                        <label>Date</label>
+                        <label for="date">Date</label>
                         <input type="date" id="date" required class="input-primary">
+                    </div>
+                </div>
+
+                <label class="recurring-toggle" for="isRecurring">
+                    <input type="checkbox" id="isRecurring">
+                    <span>Repeat this transaction</span>
+                </label>
+                <div class="form-row recurring-options" id="recurringOptions" hidden>
+                    <div class="form-group">
+                        <label for="recurringFrequency">Repeat</label>
+                        <select id="recurringFrequency" class="input-primary">
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly" selected>Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="recurringEndDate">End date <small>(optional)</small></label>
+                        <input type="date" id="recurringEndDate" class="input-primary">
                     </div>
                 </div>
 
@@ -112,7 +131,7 @@
 
             <div class="budget-input-row">
                 <input type="number" id="budgetInput" placeholder="Set budget (₹)" class="input-primary" min="0" step="0.01">
-                <button id="setBudget" class="btn btn-primary">Set</button>
+                <button id="setBudget" class="btn btn-primary" type="button">Set</button>
             </div>
 
             <div class="budget-stats" id="budgetStats">
@@ -139,10 +158,19 @@
         <div class="card history-card">
             <div class="history-header">
                 <h3 class="card-title">📋 Transaction History</h3>
-                <input type="text" id="search" placeholder="🔍 Search..." class="search-input">
+                <input type="text" id="search" placeholder="🔍 Search..." class="search-input" aria-label="Search transactions">
             </div>
             <ul id="list">
                 <li class="empty-state">No transactions yet — add your first one.</li>
+            </ul>
+        </div>
+
+        <!-- RECURRING TRANSACTIONS -->
+        <div class="card recurring-card">
+            <h3 class="card-title">🔁 Recurring Transactions</h3>
+            <p class="recurring-hint">Scheduled items are added automatically when you open the app.</p>
+            <ul id="recurringList">
+                <li class="empty-state">No recurring transactions yet.</li>
             </ul>
         </div>
 
@@ -150,10 +178,10 @@
         <div class="card actions-card">
             <h3 class="card-title">💾 Data</h3>
             <div class="actions-grid">
-                <button id="downloadCSV" class="btn btn-success">
+                <button id="downloadCSV" class="btn btn-success" type="button">
                     <span>📥</span> Export CSV
                 </button>
-                <button id="backupData" class="btn btn-info">
+                <button id="backupData" class="btn btn-info" type="button">
                     <span>💾</span> Backup JSON
                 </button>
                 <label for="restoreFile" class="btn btn-warning">
@@ -161,7 +189,7 @@
                 </label>
                 <input type="file" id="restoreFile" accept=".json" hidden>
             </div>
-            <p class="actions-hint">Backup saves everything. Restore from any previous backup.</p>
+            <p class="actions-hint">Backup saves transactions, recurring schedules, and budget. Restore from any previous backup.</p>
         </div>
 
     </div>

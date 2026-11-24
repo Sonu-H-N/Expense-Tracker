@@ -3,7 +3,7 @@
    Cache-first offline support for the full app shell
    ========================================================== */
 
-const CACHE_NAME = "expense-tracker-v4";
+const CACHE_NAME = "expense-tracker-v5";
 
 const STATIC_CACHE = [
     "./",
